@@ -1,0 +1,45 @@
+name: "Automation Hub"
+description: "Runs a Build on Automation Hub"
+inputs:
+  testSuiteId:
+    description: "Test Suite ID"
+    required: true
+  userKeyId:
+    description: "User Key ID"
+    required: true
+  userKeySecret:
+    description: "User Key Secret"
+    required: true
+  startOnly:
+    description: "Start Only"
+    required: false
+    default: "false"
+runs:
+  using: "composite"
+  steps:
+    - name: Setup environment variables
+      run: |
+        if [ "$RUNNER_OS" == "macOs" ]; then
+          echo "CLI_FILENAME=deepcrawl-test-macos" >> $GITHUB_ENV
+        elif [ "$RUNNER_OS" == "Windows" ]; then
+          echo "CLI_FILENAME=deepcrawl-test-win.exe" >> $GITHUB_ENV
+        else
+          echo "CLI_FILENAME=deepcrawl-test-linux" >> $GITHUB_ENV
+        fi
+        echo "CLI_VERSION=$CLI_VERSION" >> $GITHUB_ENV
+      shell: bash
+      env:
+        CLI_VERSION: 1.1.1
+
+    - name: Download CLI
+      run: |
+        curl -L https://github.com/deepcrawl/deepcrawl-test/releases/download/v$CLI_VERSION/$CLI_FILENAME --output $CLI_FILENAME
+      shell: bash
+
+    - name: Set permissions on CLI executable
+      run: chmod 0755 $CLI_FILENAME
+      shell: bash
+
+    - name: Run Build
+      run: ./$CLI_FILENAME --testSuiteId=${{ inputs.testSuiteId }} --userKeyId=${{ inputs.userKeyId }} --userKeySecret=${{ inputs.userKeySecret }} --startOnly=${{ inputs.startOnly }} --ciBuildId=$GITHUB_SHA
+      shell: bash
