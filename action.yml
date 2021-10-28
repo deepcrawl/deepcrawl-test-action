@@ -1,4 +1,4 @@
-name: "Automation Hub"
+name: "Deepcrawl Automation Hub"
 description: "Runs a Build on Automation Hub"
 inputs:
   testSuiteId:
