@@ -20,7 +20,7 @@ jobs:
     steps:
       - name: Automation Hub Build
         id: automation-hub-build
-        uses: deepcrawl/deepcrawl-test-action@v1.0.0
+        uses: deepcrawl/deepcrawl-test-action@v1.0.2
         with:
           testSuiteId: "" # Your Test Suite ID
           userKeyId: "" # Your User Key ID
